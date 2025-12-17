@@ -1,1 +1,1 @@
-# szkolla chyba!!??
+# Personal progress
