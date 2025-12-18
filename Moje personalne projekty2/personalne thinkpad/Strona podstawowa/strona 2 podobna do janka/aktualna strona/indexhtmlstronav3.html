@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mój Super Blog (v3)</title>
+    <style>
+        /* --- NOWA PALETA KOLORÓW (Ciemny Niebieski / Złoty) --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #ecf0f1; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Nagłówek i Stopka (Ciemny Granat) */
+        header, footer { background-color: #34495e; color: white; padding: 1rem; }
+        header { display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 1.5rem; }
+        nav button { background: none; border: 1px solid white; color: white; padding: 5px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        nav button:hover { background: white; color: #34495e; } /* Zmieniono kolor hover */
+
+        /* Kontener główny */
+        main { flex: 1; padding: 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+        /* Widoki (Strony) */
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.5s; }
+
+        /* Karty Postów */
+        .post-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; border-left: 5px solid #f39c12; }
+        .post-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .post-meta { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 10px; }
+        .post-content-full { display: none; margin-top: 15px; border-top: 1px solid #bdc3c7; padding-top: 15px; line-height: 1.6; }
+        .post-card.expanded .post-content-full { display: block; }
+        .post-card.expanded .post-excerpt { display: none; }
+        .post-image { max-width: 100%; height: auto; margin: 10px 0; border-radius: 4px; }
+        .file-link { margin-top: 10px; display: block; font-weight: bold; color: #2980b9; }
+
+        /* Formularze */
+        .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+        input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        /* Przyciski */
+        button { cursor: pointer; border-radius: 4px; transition: background-color 0.2s; }
+        button.btn-primary { background-color: #f39c12; color: white; border: none; padding: 10px 20px; width: 100%; }
+        button.btn-primary:hover { background-color: #e67e22; }
+        button.btn-settings { background-color: #2ecc71; }
+        button.btn-settings:hover { background-color: #27ae60; }
+        button.btn-edit { background-color: #3498db; color: white; border: none; padding: 5px 10px; margin-right: 5px; }
+        button.btn-danger { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; }
+
+        /* PAGINACJA */
+        #pagination-controls { text-align: center; padding: 20px 0; }
+        #pagination-controls button { background-color: #3498db; color: white; border: none; padding: 8px 15px; margin: 0 5px; }
+        #pagination-controls button:disabled { background-color: #bdc3c7; }
+        .page-info { margin: 0 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="blog-title">Mój Super Blog</h1>
+        <nav>
+            <button onclick="showView('home')">Strona Główna</button>
+            <button id="nav-login-btn" onclick="showView('login')">Panel Admina</button>
+            <button id="nav-logout-btn" onclick="logout()" style="display:none; border-color: #e74c3c; color: #e74c3c;">Wyloguj</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="view-home" class="view active">
+            <h2>Najnowsze wpisy</h2>
+            <div id="posts-container">
+                </div>
+            <div id="pagination-controls"></div>
+        </section>
+
+        <section id="view-login" class="view">
+            <div class="form-container">
+                <h2 style="text-align:center">Logowanie do Admina</h2>
+                <input type="text" id="login-user" placeholder="Login (wpisz: admin)">
+                <input type="password" id="login-pass" placeholder="Hasło (wpisz: twoje_haslo)">
+                <button class="btn-primary" onclick="handleLogin()">Zaloguj się</button>
+                <p id="login-error" style="color:red; display:none; text-align:center; margin-top:10px;">Błędne dane!</p>
+            </div>
+        </section>
+
+        <section id="view-admin" class="view">
+            <h2>Panel Administratora</h2>
+            
+            <div class="admin-panel-section">
+                <h3>Dodaj nowy post</h3>
+                <input type="text" id="new-title" placeholder="Tytuł posta">
+                <input type="text" id="new-author" placeholder="Autor" value="Admin">
+                <textarea id="new-content" rows="5" placeholder="Treść posta..."></textarea>
+                <input type="text" id="new-image-url" placeholder="URL do zdjęcia (opcjonalnie)">
+                <input type="text" id="new-file-url" placeholder="URL do pliku (opcjonalnie)">
+                <button class="btn-primary" onclick="addPost()">Opublikuj</button>
+            </div>
+
+            <div class="admin-panel-section">
+                <h3>Ustawienia Bloga</h3>
+                <input type="text" id="settings-footer" placeholder="Tekst stopki">
+                <button class="btn-primary btn-settings" onclick="updateSettings()">Zapisz Ustawienia</button>
+            </div>
+
+            <div class="admin-panel-section">
+                <h3>Zarządzaj postami</h3>
+                <ul id="admin-posts-list" class="admin-post-list" style="list-style: none; padding: 0;">
+                    </ul>
+            </div>
+        </section>
+
+        <section id="view-edit" class="view">
+            <div class="form-container">
+                <h2 style="text-align:center">Edytuj Post</h2>
+                <input type="hidden" id="edit-id">
+                <input type="text" id="edit-title" placeholder="Tytuł posta">
+                <input type="text" id="edit-author" placeholder="Autor">
+                <textarea id="edit-content" rows="8" placeholder="Treść posta..."></textarea>
+                <input type="text" id="edit-image-url" placeholder="URL do zdjęcia">
+                <input type="text" id="edit-file-url" placeholder="URL do pliku">
+                <button class="btn-primary" onclick="saveEditedPost()">Zapisz Zmiany</button>
+                <button class="btn-danger" style="margin-top: 10px;" onclick="showView('admin')">Wróć do Admina</button>
+            </div>
+        </section>
+    </main>
+
+    <footer id="main-footer">
+        &copy; 2023 Mój Blog. Wszelkie prawa zastrzeżone.
+    </footer>
+
+    <script>
+        /* --- LOGIKA JAVASCRIPT --- */
+
+        // 1. BAZA DANYCH
+        const defaultPosts = [
+            { id: 1, title: "Witaj na moim blogu!", author: "Admin", date: "2023-12-01", content: "To jest pierwszy post. Zobacz, jak elegancko wygląda nowy design! Teraz możesz też edytować ten post w panelu admina.", imageUrl: "https://picsum.photos/400/200?random=1", fileUrl: "" },
+            { id: 2, title: "Nowa paleta kolorów i funkcje", author: "Jan Kowalski", date: "2023-12-02", content: "Wprowadziliśmy nowe kolory: Granat, Złoto i Zieleń. Dodaliśmy także możliwość edycji i załączania plików!", imageUrl: "", fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
+            { id: 3, title: "Post testowy numer trzy", author: "Admin", date: "2023-12-03", content: "Ten post testuje stronicowanie i wyświetlanie domyślnej miniatury, ponieważ nie ma własnego obrazka.", imageUrl: "", fileUrl: "" },
+            { id: 4, title: "Kolejny wpis", author: "Anna Nowak", date: "2023-12-04", content: "Wpisy są sortowane według daty, od najnowszych do najstarszych. Sprawdź paginację!", imageUrl: "https://picsum.photos/400/200?random=4", fileUrl: "" },
+            { id: 5, title: "Ostatni post na pierwszej stronie", author: "Admin", date: "2023-12-05", content: "Mamy 5 postów na stronę. Ten powinien być ostatni widoczny bez przełączania strony.", imageUrl: "", fileUrl: "" },
+            { id: 6, title: "Post numer sześć (początek strony 2)", author: "Paginator", date: "2023-12-06", content: "Ten post powinien być widoczny tylko na drugiej stronie.", imageUrl: "https://picsum.photos/400/200?random=6", fileUrl: "" },
+            { id: 7, title: "Post numer siedem", author: "Paginator", date: "2023-12-07", content: "Jeszcze jeden post testowy dla strony drugiej.", imageUrl: "", fileUrl: "" },
+        ];
+
+        let posts = JSON.parse(localStorage.getItem('myBlogPosts')) || defaultPosts;
+        let footerText = localStorage.getItem('myBlogFooter') || "&copy; 2023 Mój Blog. Wszelkie prawa zastrzeżone.";
+        
+        // Zmienne do PAGINACJI
+        const postsPerPage = 5; 
+        let currentPage = 1;
+
+        // 2. FUNKCJE STARTOWE
+        document.getElementById('main-footer').innerHTML = footerText;
+        renderHomePosts();
+        if(localStorage.getItem('isAdmin') === 'true') toggleNavButtons(true);
+
+        // 3. NAWIGACJA (SPA)
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            
+            if(viewName === 'home') {
+                document.getElementById('view-home').classList.add('active');
+            } else if (viewName === 'login') {
+                if(localStorage.getItem('isAdmin') === 'true') {
+                    showView('admin');
+                } else {
+                    document.getElementById('view-login').classList.add('active');
+                }
+            } else if (viewName === 'admin') {
+                if(localStorage.getItem('isAdmin') === 'true') {
+                    document.getElementById('view-admin').classList.add('active');
+                    renderAdminList(); 
+                } else {
+                    showView('home'); 
+                    alert("Wymagane logowanie.");
+                }
+            } else if (viewName === 'edit') {
+                 if(localStorage.getItem('isAdmin') === 'true') {
+                    document.getElementById('view-edit').classList.add('active');
+                } else {
+                    showView('home'); 
+                }
+            }
+        }
+
+        // 4. LOGOWANIE
+        function handleLogin() {
+            const loginInput = document.getElementById('login-user').value;
+            const passInput = document.getElementById('login-pass').value;
+
+            if (loginInput === "admin" && passInput === "twoje_haslo") { 
+                localStorage.setItem('isAdmin', 'true');
+                toggleNavButtons(true);
+                document.getElementById('login-error').style.display = 'none';
+                document.getElementById('login-user').value = '';
+                document.getElementById('login-pass').value = '';
+                showView('admin');
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isAdmin');
+            toggleNavButtons(false);
+            showView('home');
+            alert("Wylogowano pomyślnie.");
+        }
+
+        function toggleNavButtons(isLoggedIn) {
+            if(isLoggedIn) {
+                document.getElementById('nav-login-btn').innerText = "Panel Admina";
+                document.getElementById('nav-logout-btn').style.display = "inline-block";
+            } else {
+                document.getElementById('nav-login-btn').innerText = "Zaloguj / Admin";
+                document.getElementById('nav-logout-btn').style.display = "none";
+            }
+        }
+        
+        // 5. OBSŁUGA POSTÓW (CRUD)
+        
+        // Wyświetlanie na stronie głównej (z PAGINACJĄ i MINIATURAMI)
+        function renderHomePosts() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = "";
+            
+            // Sortowanie od najnowszego
+            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Logika paginacji
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            const postsToShow = sortedPosts.slice(startIndex, endIndex);
+
+            if (postsToShow.length === 0 && currentPage > 1) {
+                currentPage--; // Cofnij do poprzedniej strony, jeśli aktualna jest pusta
+                renderHomePosts();
+                return;
+            }
+
+            postsToShow.forEach(post => {
+                const fragment = post.content.substring(0, 100) + "...";
+                
+                // MINIATURA (Placeholder, jeśli brak URL)
+                const finalImageUrl = post.imageUrl || 'https://picsum.photos/400/200?blur=5&grayscale'; 
+                const imageHtml = `<img src="${finalImageUrl}" alt="${post.title}" class="post-image">`;
+                
+                const fileHtml = post.fileUrl ? `<a href="${post.fileUrl}" target="_blank" class="file-link">🔗 Pobierz załączony plik</a>` : '';
+
+                const html = `
+                    <div class="post-card" onclick="togglePost(this)">
+                        <h3>${post.title}</h3>
+                        <div class="post-meta">Autor: ${post.author} | Data: ${post.date}</div>
+                        <div class="post-excerpt">${fragment} <br><b>(Kliknij, aby czytać dalej)</b></div>
+                        <div class="post-content-full">
+                            ${imageHtml}
+                            <p>${post.content}</p>
+                            ${fileHtml}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            renderPaginationControls(); // Wyświetl kontrolki paginacji
+        }
+
+        // Kontrolki Pagiancji
+        function renderPaginationControls() {
+            const controls = document.getElementById('pagination-controls');
+            controls.innerHTML = "";
+            
+            const totalPages = Math.ceil(posts.length / postsPerPage);
+            
+            if (totalPages <= 1) return;
+
+            const prevButton = `<button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Poprzednia</button>`;
+            const nextButton = `<button onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>Następna &raquo;</button>`;
+            const pageInfo = `<span class="page-info">Strona ${currentPage} z ${totalPages}</span>`;
+
+            controls.innerHTML = prevButton + pageInfo + nextButton;
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            const totalPages = Math.ceil(posts.length / postsPerPage);
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderHomePosts();
+                // Przewiń do góry
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function togglePost(element) {
+            element.classList.toggle('expanded');
+        }
+
+        function addPost() {
+            // ... (kod dodawania posta bez zmian)
+            const title = document.getElementById('new-title').value;
+            const author = document.getElementById('new-author').value;
+            const content = document.getElementById('new-content').value;
+            const imageUrl = document.getElementById('new-image-url').value;
+            const fileUrl = document.getElementById('new-file-url').value;
+            
+            const date = new Date().toISOString().split('T')[0];
+
+            if(!title || !content) {
+                alert("Wypełnij tytuł i treść!");
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                author: author,
+                date: date,
+                content: content,
+                imageUrl: imageUrl, 
+                fileUrl: fileUrl   
+            };
+
+            posts.unshift(newPost);
+            saveData();
+            
+            currentPage = 1; // Przejdź na pierwszą stronę po dodaniu
+            renderHomePosts();
+            renderAdminList();
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-content').value = '';
+            document.getElementById('new-image-url').value = '';
+            document.getElementById('new-file-url').value = '';
+            alert("Post dodany!");
+        }
+        
+        function editPost(id) {
+            const postId = parseInt(id);
+            const postToEdit = posts.find(post => post.id === postId);
+
+            if (postToEdit) {
+                document.getElementById('edit-id').value = postToEdit.id;
+                document.getElementById('edit-title').value = postToEdit.title;
+                document.getElementById('edit-author').value = postToEdit.author;
+                document.getElementById('edit-content').value = postToEdit.content;
+                document.getElementById('edit-image-url').value = postToEdit.imageUrl || '';
+                document.getElementById('edit-file-url').value = postToEdit.fileUrl || '';
+                showView('edit');
+            }
+        }
+
+        function saveEditedPost() {
+            const id = parseInt(document.getElementById('edit-id').value);
+            const title = document.getElementById('edit-title').value;
+            const author = document.getElementById('edit-author').value;
+            const content = document.getElementById('edit-content').value;
+            const imageUrl = document.getElementById('edit-image-url').value;
+            const fileUrl = document.getElementById('edit-file-url').value;
+
+            if(!title || !content) {
+                alert("Wypełnij tytuł i treść!");
+                return;
+            }
+
+            const postIndex = posts.findIndex(post => post.id === id);
+            
+            if (postIndex !== -1) {
+                posts[postIndex] = {
+                    ...posts[postIndex],
+                    title: title,
+                    author: author,
+                    content: content,
+                    imageUrl: imageUrl,
+                    fileUrl: fileUrl
+                };
+                saveData();
+                renderHomePosts();
+                renderAdminList();
+                showView('admin');
+                alert("Post zaktualizowany!");
+            }
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-posts-list');
+            list.innerHTML = "";
+            
+            // Sortowanie od najnowszego
+            const sortedAdminPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedAdminPosts.forEach(post => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><b>${post.title.substring(0, 30)}...</b> (${post.date})</span>
+                    <div>
+                        <button class="btn-edit" onclick="editPost(${post.id})">Edytuj</button>
+                        <button class="btn-danger" onclick="deletePost(${post.id})">Usuń</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function deletePost(id) {
+            if(confirm("Czy na pewno chcesz usunąć ten post? Spowoduje to automatyczne odświeżenie paginacji.")) {
+                posts = posts.filter(post => post.id !== id);
+                saveData();
+                renderHomePosts();
+                renderAdminList();
+            }
+        }
+
+        function updateSettings() {
+            const newFooter = document.getElementById('settings-footer').value;
+            if(newFooter) {
+                footerText = newFooter;
+                document.getElementById('main-footer').innerHTML = footerText;
+                localStorage.setItem('myBlogFooter', footerText);
+                alert("Stopka zaktualizowana!");
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('myBlogPosts', JSON.stringify(posts));
+        }
+
+    </script>
+</body>
+</html>

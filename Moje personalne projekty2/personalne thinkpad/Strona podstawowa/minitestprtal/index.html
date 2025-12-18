@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini OdkrywajTo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Mini OdkrywajTo</h1>
+</header>
+<nav>
+    <a href="#">Strona główna</a>
+    <a href="#">Posty</a>
+    <a href="#">Kontakt</a>
+</nav>
+<div class="container">
+    <div id="loginBox">
+        <h3>Zaloguj się</h3>
+        <input id="loginUser" type="text" placeholder="Użytkownik">
+        <input id="loginPass" type="password" placeholder="Hasło">
+        <button onclick="login()">Zaloguj</button>
+    </div>
+
+    <div id="postForm">
+        <h3>Dodaj nowy post</h3>
+        <input id="title" type="text" placeholder="Tytuł posta">
+        <textarea id="content" rows="4" placeholder="Treść posta..."></textarea>
+        <button onclick="addPost()">Dodaj</button>
+    </div>
+
+    <div class="posts" id="posts"></div>
+</div>
+
+<script>
+    let currentUser = localStorage.getItem('currentUser') || null;
+
+    function login() {
+        const user = document.getElementById('loginUser').value;
+        const pass = document.getElementById('loginPass').value;
+        if(user === 'admin' && pass === 'root') {
+            currentUser = 'admin';
+            localStorage.setItem('currentUser', currentUser);
+            setupPermissions();
+        } else {
+            alert('Błędny login lub hasło!');
+        }
+    }
+
+    function setupPermissions() {
+        const loginBox = document.getElementById('loginBox');
+        const postForm = document.getElementById('postForm');
+        loginBox.style.display = currentUser ? 'none' : 'block';
+        postForm.style.display = (currentUser === 'admin') ? 'block' : 'none';
+        loadPosts();
+    }
+
+    function addPost() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        if(!title || !content) return alert('Wpisz tytuł i treść!');
+        const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+        posts.push({ title, content });
+        localStorage.setItem('posts', JSON.stringify(posts));
+        document.getElementById('title').value = '';
+        document.getElementById('content').value = '';
+        loadPosts();
+    }
+
+    function loadPosts() {
+        const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+        const postsDiv = document.getElementById('posts');
+        postsDiv.innerHTML = '';
+
+        if (!Array.isArray(posts) || posts.length === 0) {
+            postsDiv.innerHTML = '<p>Brak postów.</p>';
+            return;
+        }
+
+        posts.forEach((post, index) => {
+            const div = document.createElement('div');
+            div.className = 'post';
+            const preview = String(post.content || '').substring(0, 80);
+            const more = (String(post.content || '').length > 80) ? '...' : '';
+            div.innerHTML = `
+                <h3>${escapeHtml(post.title)}</h3>
+                <p>${escapeHtml(preview)}${more}</p>
+                <a href="post.html?index=${index}">Czytaj więcej</a>
+            `;
+            postsDiv.appendChild(div);
+        });
+    }
+
+    // Prosty helper do escapowania HTML (ochrona przed wstrzyknięciem)
+    function escapeHtml(str = '') {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function openPost(index) {
+        const posts = JSON.parse(localStorage.getItem('posts'));
+        const post = posts[index];
+        alert(`Tytuł: ${post.title}\n\nTreść:\n${post.content}`);
+    }
+
+    setupPermissions();
+</script>
+</body>
+</html>

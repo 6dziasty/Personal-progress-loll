@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☠️ MOJ MEGA EMO BLOG 2005 ☠️</title>
+    <style>
+        /* * 🖤 Y2K EMO COOL STYLE 🖤
+         * CZERŃ, RÓŻ (FUKSJA), ZIELONY LIME, GRUBE KONTURY
+         */
+        
+        /* ------------------------------------- */
+        /* GLOBALNE */
+        /* ------------------------------------- */
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #000; /* CZARNE TŁO */
+            color: #fff; /* BIAŁY TEKST */
+            display: flex; 
+            min-height: 100vh; /* Zmieniono na flex dla układu z paskiem bocznym */
+            flex-direction: column;
+            overflow-x: hidden;
+            font-size: 14px;
+        }
+
+        /* ------------------------------------- */
+        /* NAGŁÓWEK & STOPKA & PASEK BOCZNY */
+        /* ------------------------------------- */
+        header { 
+            background-color: #222; /* CIEMNY SZARY */
+            color: #ff00ff; /* FUKSJA */
+            padding: 1rem; 
+            border-bottom: 3px solid #00ff00; /* LIME KONTUR */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+        }
+        header h1 { margin: 0; font-size: 2rem; color: #00ff00; } /* LIME NAGŁÓWEK */
+        
+        nav button { 
+            background: #ff00ff; /* FUKSJA TŁO */
+            border: 2px solid #00ff00; /* LIME KONTUR */
+            color: #000; 
+            padding: 5px 15px; 
+            cursor: pointer; 
+            border-radius: 0; /* KWADRATOWE */
+            transition: 0.3s; 
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #00ff00; /* LIME CIEŃ */
+            margin-left: 5px;
+        }
+        nav button:hover { 
+            background: #00ff00; /* LIME HOVER */
+            color: #000; 
+            box-shadow: 3px 3px 0 #ff00ff; /* FUKSJA CIEŃ */
+        } 
+        #nav-logout-btn { 
+            border-color: #ff00ff !important; 
+            color: #000 !important;
+            background: #ff00ff !important;
+        }
+        #nav-logout-btn:hover {
+             background: #00ff00 !important;
+             border-color: #ff00ff !important;
+        }
+
+        footer { 
+            background-color: #222; 
+            color: #00ff00; 
+            padding: 1rem; 
+            border-top: 3px solid #ff00ff; /* FUKSJA KONTUR */
+            text-align: center;
+            font-size: 0.8rem;
+            margin-top: auto;
+        }
+        
+        /* PASEK BOCZNY Z OGNIEM */
+        #fire-sidebar {
+            width: 150px;
+            background-color: #111;
+            padding: 10px;
+            border-right: 3px solid #00ff00;
+            display: none; /* Domyślnie ukryty, pokazywany przez JS */
+            flex-direction: column;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            height: 100vh; /* Pełna wysokość widoku */
+            overflow: hidden;
+        }
+
+        /* ------------------------------------- */
+        /* KONTENER GŁÓWNY I WIDOKI */
+        /* ------------------------------------- */
+        .main-content-wrapper {
+            display: flex;
+            flex: 1; /* Kontener zajmuje całą dostępną przestrzeń */
+        }
+
+        main { 
+            flex: 1; 
+            padding: 20px; 
+            max-width: 800px; 
+            width: 100%; 
+            margin: 0 auto;
+        }
+
+        .view { display: none; }
+        .view.active { 
+            display: block; 
+            animation: fadeIn 0.5s; 
+        }
+
+        /* ------------------------------------- */
+        /* KARTY POSTÓW */
+        /* ------------------------------------- */
+        .post-card { 
+            background: #1a1a1a; 
+            border: 3px solid #00ff00; /* LIME KONTUR */
+            border-radius: 0; 
+            box-shadow: 4px 4px 0 #ff00ff; /* FUKSJA CIEŃ */
+            padding: 20px; 
+            margin-bottom: 25px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+        }
+        .post-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 6px 6px 0 #00ff00; /* ODWRÓCONY CIEŃ */
+            border-color: #ff00ff; /* ZMIEŃ KONTUR */
+        }
+        .post-card h3 { color: #ff00ff; text-shadow: 1px 1px 0 #000; margin-top: 0; }
+        .post-meta { font-size: 0.85rem; color: #00ff00; margin-bottom: 10px; }
+        .post-content-full { 
+            display: none; 
+            margin-top: 15px; 
+            border-top: 1px dashed #555; 
+            padding-top: 15px; 
+            line-height: 1.6; 
+            color: #ccc;
+        }
+        .post-card.expanded .post-content-full { display: block; }
+        .post-card.expanded .post-excerpt { display: none; }
+        .post-image { 
+            max-width: 100%; 
+            height: auto; 
+            margin: 10px 0; 
+            border: 3px dashed #ff00ff; /* FUKSJA RAMKA DASHED */
+            cursor: pointer; /* WAŻNE DLA FUNKCJI POWIĘKSZANIA */
+        }
+        .file-link { margin-top: 10px; display: block; font-weight: bold; color: #00ff00; }
+
+        /* ------------------------------------- */
+        /* FORMULARZE I PRZYCISKI */
+        /* ------------------------------------- */
+        .form-container { 
+            background: #111; 
+            padding: 30px; 
+            border-radius: 0; 
+            border: 3px solid #00ff00; 
+            box-shadow: 4px 4px 0 #ff00ff; 
+            max-width: 500px; 
+        }
+        input, textarea { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 2px solid #ff00ff; 
+            background-color: #000;
+            color: #00ff00; 
+            border-radius: 0; 
+            box-sizing: border-box; 
+        }
+        
+        button.btn-primary, button.btn-settings { 
+            background-color: #ff00ff; 
+            color: #000; 
+            border: 2px solid #00ff00; 
+            padding: 10px 20px; 
+            width: 100%; 
+            font-weight: bold;
+            box-shadow: 2px 2px 0 #00ff00;
+        }
+        button.btn-primary:hover, button.btn-settings:hover { 
+            background-color: #00ff00; 
+            box-shadow: 2px 2px 0 #ff00ff;
+        }
+        button.btn-edit { 
+            background-color: #00ff00; 
+            color: #000; 
+            border: 2px solid #ff00ff;
+            padding: 5px 10px; 
+            margin-right: 5px; 
+            font-weight: bold;
+        }
+        button.btn-danger { 
+            background-color: #ff00ff; 
+            color: #000; 
+            border: 2px solid #00ff00;
+            padding: 5px 10px; 
+            font-weight: bold;
+        }
+
+        /* LISTA ADMINA */
+        #admin-posts-list li {
+            background-color: #1a1a1a;
+            border: 1px solid #555;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #admin-posts-list span { color: #ccc; }
+
+        /* PAGINACJA */
+        #pagination-controls button { 
+            background-color: #00ff00; 
+            color: #000; 
+            border: 2px solid #ff00ff; 
+            padding: 8px 15px; 
+            margin: 0 5px; 
+            font-weight: bold;
+        }
+        #pagination-controls button:disabled { background-color: #333; color: #777; border-color: #333; }
+        .page-info { color: #ff00ff; font-weight: bold; margin: 0 10px; }
+
+        /* ------------------------------------- */
+        /* MODAL (POWIĘKSZANIE ZDJĘĆ) */
+        /* ------------------------------------- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            padding-top: 50px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.9); 
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 800px;
+            border: 5px solid #00ff00;
+            box-shadow: 0 0 20px #ff00ff;
+            animation: zoom 0.6s;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #ff00ff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #00ff00;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoom { from { transform:scale(0) } to { transform:scale(1) } }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="blog-title">☠️ MEGA BLOG 4U 2005 ☠️</h1>
+        <nav>
+            <button onclick="showView('home')">STRONA GŁÓWNA</button>
+            <button id="nav-login-btn" onclick="showView('login')">PANEL ADMINA</button>
+            <button id="nav-logout-btn" onclick="logout()" style="display:none;">WYLOGUJ</button>
+        </nav>
+    </header>
+
+    <div class="main-content-wrapper">
+        <aside id="fire-sidebar">
+            <img src="https://i.imgur.com/gOq6f3Y.gif" alt="Ogień animowany Y2K" style="width: 100%; margin-bottom: 20px; border: 1px solid #ff00ff;">
+            <img src="https://i.imgur.com/gOq6f3Y.gif" alt="Ogień animowany Y2K" style="width: 100%; margin-bottom: 20px; border: 1px solid #ff00ff;">
+            <img src="https://i.imgur.com/gOq6f3Y.gif" alt="Ogień animowany Y2K" style="width: 100%; margin-bottom: 20px; border: 1px solid #ff00ff;">
+            <p style="color:#00ff00; text-align:center; font-weight:bold;">☠️ L I V E ☠️</p>
+        </aside>
+
+        <main>
+            <section id="view-home" class="view active">
+                <h2>💔 NAJNOWSZE EMO WPISY 💔</h2>
+                <div id="posts-container"></div>
+                <div id="pagination-controls"></div>
+            </section>
+
+            <section id="view-login" class="view">
+                <div class="form-container">
+                    <h2 style="text-align:center; color: #ff00ff;">ZALOGUJ SIĘ (ADMIN 🤘)</h2>
+                    <input type="text" id="login-user" placeholder="LOGIN (wpisz: admin)">
+                    <input type="password" id="login-pass" placeholder="HASŁO (wpisz: twoje_haslo)">
+                    <button class="btn-primary" onclick="handleLogin()">ZALOGUJ SIĘ</button>
+                    <p id="login-error" style="color:#ff00ff; display:none; text-align:center; margin-top:10px;">BŁĘDNE DANE! TRY AGAIN 😡</p>
+                </div>
+            </section>
+
+            <section id="view-admin" class="view">
+                <h2>🛠️ PANEL ADMINISTRATORA 🛠️</h2>
+                
+                <div class="form-container" style="margin-bottom: 20px;">
+                    <h3>➕ DODAJ NOWY POST ➕</h3>
+                    <input type="text" id="new-title" placeholder="TYTUŁ POSTA">
+                    <input type="text" id="new-author" placeholder="AUTOR" value="Admin">
+                    <textarea id="new-content" rows="5" placeholder="TREŚĆ POSTA..."></textarea>
+                    <input type="text" id="new-image-url" placeholder="URL DO ZDJĘCIA (opcjonalnie)">
+                    <input type="text" id="new-file-url" placeholder="URL DO PLIKU (opcjonalnie)">
+                    <button class="btn-primary" onclick="addPost()">OPUBLIKUJ</button>
+                </div>
+
+                <div class="form-container" style="margin-bottom: 20px;">
+                    <h3>⚙️ USTAWIENIA BLOGA ⚙️</h3>
+                    <input type="text" id="settings-footer" placeholder="TEKST STOPKI">
+                    <button class="btn-primary btn-settings" onclick="updateSettings()">ZAPISZ USTAWIENIA</button>
+                </div>
+
+                <div class="form-container">
+                    <h3>❌ ZARZĄDZAJ POSTAMI ✏️</h3>
+                    <ul id="admin-posts-list" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </section>
+
+            <section id="view-edit" class="view">
+                <div class="form-container">
+                    <h2 style="text-align:center; color: #00ff00;">EDYTUJ POST</h2>
+                    <input type="hidden" id="edit-id">
+                    <input type="text" id="edit-title" placeholder="Tytuł posta">
+                    <input type="text" id="edit-author" placeholder="Autor">
+                    <textarea id="edit-content" rows="8" placeholder="Treść posta..."></textarea>
+                    <input type="text" id="edit-image-url" placeholder="URL do zdjęcia">
+                    <input type="text" id="edit-file-url" placeholder="URL do pliku">
+                    <button class="btn-primary" onclick="saveEditedPost()">ZAPISZ ZMIANY</button>
+                    <button class="btn-danger" style="margin-top: 10px;" onclick="showView('admin')">WRÓĆ DO ADMINA</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="main-footer">
+        &copy; 2005 My Chemical Blog. Wszelkie prawa są smutne.
+    </footer>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+      <span class="modal-close">&times;</span>
+      <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        /* --- LOGIKA JAVASCRIPT --- */
+
+        // 1. BAZA DANYCH (DOMYŚLNE POSTY)
+        const defaultPosts = [
+            { id: 1, title: "Witaj w moim czarnym sercu 🖤", author: "Admin", date: "2023-12-01", content: "OMG. Ten design jest taki mroczny i kúl. Teraz możesz zobaczyć moje zdjęcia w pełnej chwale po kliknięciu!", imageUrl: "https://picsum.photos/400/200?random=1", fileUrl: "" },
+            { id: 2, title: "Rozczarowanie i Cień", author: "Jan Kowalski", date: "2023-12-02", content: "Wszyscy mnie ranią. Moje życie to popiół i ogień. Zobacz ten PDF, który napisałem o moich uczuciach.", imageUrl: "", fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
+            { id: 3, title: "Test Paginacji Y2K", author: "Admin", date: "2023-12-03", content: "Jeszcze jeden post, aby sprawdzić, czy stronicowanie działa z tymi mrocznymi stylami.", imageUrl: "", fileUrl: "" },
+            { id: 4, title: "Wszyscy Umrzemy", author: "Anna Nowak", date: "2023-12-04", content: "Życie jest tylko tymczasowym cierpieniem. PS. Moje zdjęcie też można powiększyć.", imageUrl: "https://picsum.photos/400/200?random=4", fileUrl: "" },
+            { id: 5, title: "Ostatni na pierwszej stronie", author: "Admin", date: "2023-12-05", content: "Jeśli masz więcej niż 5 postów, musisz kliknąć Następna, aby widzieć resztę cierpienia.", imageUrl: "", fileUrl: "" },
+            { id: 6, title: "Post na Stronie 2 - Ból i Neon", author: "Paginator", date: "2023-12-06", content: "Czemu jest tu tak jasno? Ból, ból, ból. To już strona druga.", imageUrl: "https://picsum.photos/400/200?random=6", fileUrl: "" },
+            { id: 7, title: "Ostatnie Pożegnanie", author: "Paginator", date: "2023-12-07", content: "Nikt mnie nie rozumie. Koniec.", imageUrl: "", fileUrl: "" },
+        ];
+
+        let posts = JSON.parse(localStorage.getItem('myBlogPosts')) || defaultPosts;
+        let footerText = localStorage.getItem('myBlogFooter') || "&copy; 2005 My Chemical Blog. Wszelkie prawa są smutne.";
+        
+        const postsPerPage = 5; 
+        let currentPage = 1;
+
+        // 2. FUNKCJE STARTOWE & WIDOK OGIEŃ
+        document.getElementById('main-footer').innerHTML = footerText;
+        renderHomePosts();
+        if(localStorage.getItem('isAdmin') === 'true') {
+            toggleNavButtons(true);
+            // Pokaż pasek boczny z ogniem tylko, gdy ktoś się zaloguje (lub jest zalogowany)
+            document.getElementById('fire-sidebar').style.display = 'flex';
+        }
+
+        // 3. NAWIGACJA (SPA)
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            
+            if(viewName === 'home') {
+                document.getElementById('view-home').classList.add('active');
+            } else if (viewName === 'login') {
+                if(localStorage.getItem('isAdmin') === 'true') {
+                    showView('admin');
+                } else {
+                    document.getElementById('view-login').classList.add('active');
+                }
+            } else if (viewName === 'admin') {
+                if(localStorage.getItem('isAdmin') === 'true') {
+                    document.getElementById('view-admin').classList.add('active');
+                    renderAdminList(); 
+                } else {
+                    showView('home'); 
+                    alert("Wymagane logowanie. Nie jesteś kúl 💔.");
+                }
+            } else if (viewName === 'edit') {
+                 if(localStorage.getItem('isAdmin') === 'true') {
+                    document.getElementById('view-edit').classList.add('active');
+                 } else {
+                    showView('home'); 
+                 }
+            }
+        }
+
+        // 4. LOGOWANIE
+        function handleLogin() {
+            const loginInput = document.getElementById('login-user').value;
+            const passInput = document.getElementById('login-pass').value;
+
+            if (loginInput === "admin" && passInput === "twoje_haslo") { 
+                localStorage.setItem('isAdmin', 'true');
+                toggleNavButtons(true);
+                document.getElementById('login-error').style.display = 'none';
+                document.getElementById('login-user').value = '';
+                document.getElementById('login-pass').value = '';
+                document.getElementById('fire-sidebar').style.display = 'flex'; // POKAZ PASEK
+                showView('admin');
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isAdmin');
+            toggleNavButtons(false);
+            document.getElementById('fire-sidebar').style.display = 'none'; // UKRYJ PASEK
+            showView('home');
+            alert("Wylogowano pomyślnie. Wracasz do smutnej rzeczywistości.");
+        }
+
+        function toggleNavButtons(isLoggedIn) {
+            if(isLoggedIn) {
+                document.getElementById('nav-login-btn').innerText = "💀 PANEL ADMINA 💀";
+                document.getElementById('nav-logout-btn').style.display = "inline-block";
+            } else {
+                document.getElementById('nav-login-btn').innerText = "ZALOGUJ / ADMIN";
+                document.getElementById('nav-logout-btn').style.display = "none";
+            }
+        }
+        
+        // 5. OBSŁUGA POSTÓW (CRUD & PAGINACJA)
+        
+        function renderHomePosts() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = "";
+            
+            const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            const postsToShow = sortedPosts.slice(startIndex, endIndex);
+
+            if (postsToShow.length === 0 && currentPage > 1) {
+                currentPage--; 
+                renderHomePosts();
+                return;
+            }
+
+            postsToShow.forEach(post => {
+                const fragment = post.content.substring(0, 100) + "...";
+                
+                const finalImageUrl = post.imageUrl || 'https://picsum.photos/400/200?blur=5&grayscale'; 
+                // DODANO atrybut data-full-src do powiększania
+                const imageHtml = `<img src="${finalImageUrl}" data-full-src="${post.imageUrl || finalImageUrl}" alt="${post.title}" class="post-image" onclick="openModal(event, this.getAttribute('data-full-src'))">`;
+                
+                const fileHtml = post.fileUrl ? `<a href="${post.fileUrl}" target="_blank" class="file-link">🔗 POBIERZ TEN MROCZNY PLIK</a>` : '';
+
+                const html = `
+                    <div class="post-card" onclick="togglePost(this)">
+                        <h3>${post.title}</h3>
+                        <div class="post-meta">AUTOR: ${post.author} | DATA: ${post.date}</div>
+                        <div class="post-excerpt">${fragment} <br><b>(KLIKNIJ, ABY CZYTAĆ I PŁAKAĆ)</b></div>
+                        <div class="post-content-full">
+                            ${imageHtml}
+                            <p>${post.content}</p>
+                            ${fileHtml}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            renderPaginationControls();
+        }
+
+        function renderPaginationControls() {
+            const controls = document.getElementById('pagination-controls');
+            controls.innerHTML = "";
+            
+            const totalPages = Math.ceil(posts.length / postsPerPage);
+            
+            if (totalPages <= 1) return;
+
+            const prevButton = `<button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>&laquo; COFNIJ</button>`;
+            const nextButton = `<button onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>DALEJ &raquo;</button>`;
+            const pageInfo = `<span class="page-info">STRONA ${currentPage} Z ${totalPages}</span>`;
+
+            controls.innerHTML = prevButton + pageInfo + nextButton;
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            const totalPages = Math.ceil(posts.length / postsPerPage);
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderHomePosts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function togglePost(element) {
+            // Upewnij się, że kliknięcie obrazka nie rozszerza/zwija karty
+            if (event.target.classList.contains('post-image') || event.target.classList.contains('file-link')) {
+                return; 
+            }
+            element.classList.toggle('expanded');
+        }
+
+        function addPost() {
+            // ... (kod dodawania posta)
+            const title = document.getElementById('new-title').value;
+            const author = document.getElementById('new-author').value;
+            const content = document.getElementById('new-content').value;
+            const imageUrl = document.getElementById('new-image-url').value;
+            const fileUrl = document.getElementById('new-file-url').value;
+            
+            const date = new Date().toISOString().split('T')[0];
+
+            if(!title || !content) {
+                alert("WYPEŁNIJ TYTUŁ I TREŚĆ, BOŻE! 🤬");
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                author: author,
+                date: date,
+                content: content,
+                imageUrl: imageUrl, 
+                fileUrl: fileUrl   
+            };
+
+            posts.unshift(newPost);
+            saveData();
+            
+            currentPage = 1; 
+            renderHomePosts();
+            renderAdminList();
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-content').value = '';
+            document.getElementById('new-image-url').value = '';
+            document.getElementById('new-file-url').value = '';
+            alert("POST DODANY! ŚMIERĆ WSZYSTKIM 😈.");
+        }
+        
+        function editPost(id) {
+            const postId = parseInt(id);
+            const postToEdit = posts.find(post => post.id === postId);
+
+            if (postToEdit) {
+                document.getElementById('edit-id').value = postToEdit.id;
+                document.getElementById('edit-title').value = postToEdit.title;
+                document.getElementById('edit-author').value = postToEdit.author;
+                document.getElementById('edit-content').value = postToEdit.content;
+                document.getElementById('edit-image-url').value = postToEdit.imageUrl || '';
+                document.getElementById('edit-file-url').value = postToEdit.fileUrl || '';
+                showView('edit');
+            }
+        }
+
+        function saveEditedPost() {
+            const id = parseInt(document.getElementById('edit-id').value);
+            const title = document.getElementById('edit-title').value;
+            const author = document.getElementById('edit-author').value;
+            const content = document.getElementById('edit-content').value;
+            const imageUrl = document.getElementById('edit-image-url').value;
+            const fileUrl = document.getElementById('edit-file-url').value;
+
+            if(!title || !content) {
+                alert("WYPEŁNIJ TYTUŁ I TREŚĆ! 😡");
+                return;
+            }
+
+            const postIndex = posts.findIndex(post => post.id === id);
+            
+            if (postIndex !== -1) {
+                posts[postIndex] = {
+                    ...posts[postIndex],
+                    title: title,
+                    author: author,
+                    content: content,
+                    imageUrl: imageUrl,
+                    fileUrl: fileUrl
+                };
+                saveData();
+                renderHomePosts();
+                renderAdminList();
+                showView('admin');
+                alert("POST ZAKTUALIZOWANY! 🤘");
+            }
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-posts-list');
+            list.innerHTML = "";
+            
+            const sortedAdminPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedAdminPosts.forEach(post => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><b>${post.title.substring(0, 30)}...</b> (${post.date})</span>
+                    <div>
+                        <button class="btn-edit" onclick="editPost(${post.id})">EDYTUJ ✏️</button>
+                        <button class="btn-danger" onclick="deletePost(${post.id})">USUŃ ❌</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function deletePost(id) {
+            if(confirm("CZY NA PEWNO CHCESZ USUNĄĆ TEN SMUTNY POST? 💔")) {
+                posts = posts.filter(post => post.id !== id);
+                saveData();
+                renderHomePosts();
+                renderAdminList();
+            }
+        }
+
+        function updateSettings() {
+            const newFooter = document.getElementById('settings-footer').value;
+            if(newFooter) {
+                footerText = newFooter;
+                document.getElementById('main-footer').innerHTML = footerText;
+                localStorage.setItem('myBlogFooter', footerText);
+                alert("STOPKA ZAKTUALIZOWANA! WIĘCEJ MROKU!");
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('myBlogPosts', JSON.stringify(posts));
+        }
+        
+        // 6. NOWA FUNKCJA: POWIĘKSZANIE ZDJĘĆ (MODAL)
+
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById("modalImage");
+
+        function openModal(event, src) {
+            event.stopPropagation(); // Zatrzymuje propagację, aby nie wyzwalać togglePost
+            if (!src || src.includes('blur=5&grayscale')) { // Pomija domyślny placeholder
+                return;
+            }
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+    </script>
+</body>
+</html>
