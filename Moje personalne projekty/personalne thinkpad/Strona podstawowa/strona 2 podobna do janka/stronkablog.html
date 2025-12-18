@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mój Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Nagłówek */
+        header {
+            background: linear-gradient(90deg, #4b6cb7, #182848);
+            color: #fff;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Główna sekcja */
+        main {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        /* Lista postów */
+        .posts {
+            flex: 3;
+        }
+
+        .post {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .post:hover {
+            transform: translateY(-5px);
+        }
+
+        .post h2 {
+            color: #182848;
+            margin-bottom: 10px;
+        }
+
+        .post p {
+            line-height: 1.6;
+        }
+
+        .post .date {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        /* Sidebar */
+        aside {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            height: fit-content;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        aside h3 {
+            margin-bottom: 15px;
+            color: #182848;
+        }
+
+        aside ul {
+            list-style: none;
+        }
+
+        aside ul li {
+            margin-bottom: 10px;
+        }
+
+        aside ul li a {
+            text-decoration: none;
+            color: #4b6cb7;
+        }
+
+        aside ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Stopka */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #182848;
+            color: #fff;
+            margin-top: 40px;
+        }
+
+        /* Responsywność */
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mój Blog</h1>
+        <nav>
+            <a href="#">Strona Główna</a>
+            <a href="#">Posty</a>
+            <a href="#">Kontakt</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="posts">
+            <div class="post">
+                <div class="date">10 Grudnia 2025</div>
+                <h2>Tytuł pierwszego posta</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet pulvinar nisi. Curabitur at erat sed libero posuere mollis.</p>
+            </div>
+            <div class="post">
+                <div class="date">9 Grudnia 2025</div>
+                <h2>Tytuł drugiego posta</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet pulvinar nisi. Curabitur at erat sed libero posuere mollis.</p>
+            </div>
+        </div>
+
+        <aside>
+            <h3>O mnie</h3>
+            <p>Cześć! Jestem Makary i dzielę się tu swoimi przemyśleniami i pracami.</p>
+            <h3>Najnowsze posty</h3>
+            <ul>
+                <li><a href="#">Tytuł pierwszego posta</a></li>
+                <li><a href="#">Tytuł drugiego posta</a></li>
+            </ul>
+        </aside>
+    </main>
+
+    <footer>
+        &copy; 2025 Mój Blog. Wszelkie prawa zastrzeżone.
+    </footer>
+</body>
+</html>
