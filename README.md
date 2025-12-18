@@ -18,7 +18,7 @@ Chcę dokumentować mój progres na temat informatyki i związanymi z nią rzecz
  - Napotkałem tylko problem sam z słabą baterią który rozwiąże kupieniem nowej baterii przez co będe mógł wymienić ją.
  - Laptop czasami wywalił "Blue Screen" który prawdopodobinie wynowajcą jest.
 
-
+--
 
 ### *29.11.25* - Podsumowanie podłączeina access pointa (AP) do mojej sieci
 *Cel*
@@ -29,6 +29,5 @@ Chcę dokumentować mój progres na temat informatyki i związanymi z nią rzecz
  - Ostatecznie AP jest podłączony do głównego rutera przez kabel sieciowy
 
 **Problemy!**
- - Wsumie to problem jedyny był z samym wejściem w konfiguracje rutera i pingowaniem go. Samym problemem był wadliwy kabel RJ-45, który wymieniłem na inny jakie miałem. 
-**Problemy!**
- - Wsumie to problem jedyny był z samym wejściem w konfiguracje rutera i pingowaniem go. Samym problemem był wadliwy kabel RJ-45, który wymieniłem na inny jakie miałem. 
+ - Wsumie to problem jedyny był z samym wejściem w konfiguracje rutera i pingowaniem go. Samym problemem był wadliwy kabel RJ-45, który wymieniłem na inny jakie miałem.
+ - Tymczasowy problem to brak tego dzyndzla od kabla i jest narazie przyklejony na taśme izolacyjną, co wygląda śmiesznie ale jako rozwiązanie narazie wystarczy.
