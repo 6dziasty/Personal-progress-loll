@@ -24,6 +24,7 @@ Wszystkie moje notatki z lekcji zawodowych, zadania i projekty znajdziesz w moim
 **Problemy!**
 - W sumie to problem jedyny był z samym wejściem w konfigurację rutera i pingowaniem go. Samym problemem był wadliwy kabel RJ-45, który wymieniłem na inny jakie miałem.
 - Tymczasowy problem to brak tego "dzyndzla" od kabla i jest na razie przyklejony na taśmę izolacyjną, co wygląda śmiesznie, ale jako rozwiązanie na razie wystarczy.
+- AKTUALIZACJA- Kabel wymieniłem niedługo po wstawieniu tego wpisu na nowy.
 
 --
 
